@@ -1,9 +1,11 @@
+-- create table if it doesn't exist
 CREATE TABLE IF NOT EXISTS items (
-id serial primary key,
-content text,
-created_at timestamptz default now()
+  id SERIAL PRIMARY KEY,
+  content TEXT,
+  created_at timestamptz DEFAULT now()
 );
 
-
--- seed with some rows
-INSERT INTO items (content) SELECT 'seed-' || g FROM generate_series(1,100) g;
+-- insert 1 million rows
+INSERT INTO items (content)
+SELECT 'row-' || g
+FROM generate_series(1,1000000) g;
