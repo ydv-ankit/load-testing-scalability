@@ -44,7 +44,7 @@ next();
 app.get('/', async (req, res) => {
 try {
 const r = await pool.query('SELECT count(*) FROM items');
-res.json({ count: Number(r.rows[0].count) });
+res.json({ count: Number(r.rows[0].count), hostname: require('os').hostname() });
 } catch (err) {
 console.error(err);
 res.status(500).json({ error: 'db error' });
