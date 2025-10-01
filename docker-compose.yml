@@ -1,0 +1,64 @@
+version: '3.8'
+services:
+app:
+build: .
+ports:
+- "3000:3000"
+environment:
+- PGHOST=db
+- PGUSER=postgres
+- PGPASSWORD=example
+- PGDATABASE=postgres
+- PGPORT=5432
+- PGPOOLSIZE=10
+depends_on:
+- db
+networks:
+- appnet
+
+
+db:
+image: postgres:15
+environment:
+- POSTGRES_PASSWORD=example
+volumes:
+- db-data:/var/lib/postgresql/data
+- ./init/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+networks:
+- appnet
+
+
+prometheus:
+image: prom/prometheus:latest
+volumes:
+- ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+ports:
+- "9090:9090"
+depends_on:
+- app
+networks:
+- appnet
+
+
+grafana:
+image: grafana/grafana:9.0
+ports:
+- "3001:3000"
+environment:
+- GF_SECURITY_ADMIN_PASSWORD=admin
+volumes:
+- grafana-data:/var/lib/grafana
+depends_on:
+- prometheus
+networks:
+- appnet
+
+
+volumes:
+db-data:
+grafana-data:
+
+
+networks:
+appnet:
+driver: bridge
